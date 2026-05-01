@@ -1,13 +1,22 @@
 import { FiPlus } from "react-icons/fi";
 import { VscSearch } from "react-icons/vsc";
+import { useStore } from "../store/store";
+import { useShallow } from "zustand/shallow";
+
 
 export default function Dashboard() {
+
+    const {userName} = useStore(
+        useShallow((state) => ({
+            userName: state.userName
+        }))
+    )
 
     return (
         <div className="ml-12 mr-7 mt-3">
             <div className="flex justify-between items-center">
                 <div className="">
-                    <h1 className="text-[30px] font-bold">Welcome back, User!👋</h1>
+                    <h1 className="text-[30px] font-bold">Welcome back, {userName}!👋</h1>
                     <p className="text-[20px]">Welcome to travel planner web application</p>
                 </div>
                 <button className="flex items-center bg-[#03969b] text-white py-1 px-3 border-none rounded-xl"><FiPlus size={18} className="mr-1"/>Create new root</button>

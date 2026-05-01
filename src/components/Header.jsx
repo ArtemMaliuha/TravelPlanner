@@ -2,19 +2,18 @@ import { VscCompass, VscSearch } from "react-icons/vsc"
 import { useState, useEffect } from "react"
 import { auth, googleProvider } from "../firebase.js"
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth"
+import { useStore } from "../store/store.jsx"
+import { useShallow } from "zustand/shallow"
 
 export default function Header() {
+    const {userPhoto, userName} = useStore(
+        useShallow((state) => ({
+            userPhoto: state.userPhoto,
+            userName: state.userName
+        }))
+    )
 
     const [isOpen, setIsOpen] = useState(false)  
-    const [user, setUser] = useState(null)
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            console.log("Поточний користувач (onAuthStateChanged):", currentUser)
-            setUser(currentUser)
-        })
-        return () => unsubscribe()
-    },[])
 
     const handleLogin = async () => {
         try {
@@ -45,9 +44,9 @@ export default function Header() {
                 </div>
                 <div className="ml-2 flex">
                     {
-                        user ? (
+                        userName ? (
                             <>
-                                <img referrerPolicy="no-referrer" alt="your photo" className="w-8 h-8 rounded-full mx-2" src={user.photoURL} />
+                                <img referrerPolicy="no-referrer" alt="your photo" className="w-8 h-8 rounded-full mx-2" src={userPhoto} />
                                 <button onClick={() => handleLogout()} className="hover:bg-red-400 px-2 border-none rounded-lg">Log out</button>
                             </>
                         ) : (
