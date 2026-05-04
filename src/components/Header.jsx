@@ -18,7 +18,7 @@ export default function Header() {
     const handleLogin = async () => {
         try {
             await signInWithPopup(auth, googleProvider)
-        } catch {
+        } catch(error) {
             console.error(error.message)
         }
     }
@@ -33,7 +33,7 @@ export default function Header() {
                 <VscCompass className="mr-[6px]" style={{transform: 'scaleY(-1)'}} size={28}/>
                 <span className="text-2xl font-medium">Travel Planner</span>
             </div>
-            <div className="w-auto flex">
+            <div className={userName ? "w-auto flex" : "hidden"}>
                 <p className="text-[20px] pt-[3px] ml-[24px] font-medium">My Trips</p>
                 <p className="text-[20px] pt-[3px] ml-[24px] font-medium">Something else</p>
             </div>
