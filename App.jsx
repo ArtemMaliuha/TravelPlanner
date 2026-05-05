@@ -1,6 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router";
 import HomePage from "./src/pages/HomePage";
-import RouterDetails from "./src/pages/RouteDetails";
+import RouteDetails from "./src/pages/RouteDetails";
 import NotFoundPage from "./src/pages/NotFoundPage";
 import { auth } from "./src/firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -10,7 +10,7 @@ import { useEffect } from "react";
 
 const router = createBrowserRouter([
   {path: "/", element: <HomePage />},
-  {path: "/routeDetails/:id", element: <RouterDetails />},
+  {path: "/routeDetails/:id", element: <RouteDetails />},
   {path: "*", element: <NotFoundPage />}
 ])
 

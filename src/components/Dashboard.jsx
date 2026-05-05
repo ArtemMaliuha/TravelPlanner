@@ -4,18 +4,25 @@ import { useStore } from "../store/store";
 import { useShallow } from "zustand/shallow";
 import { auth, googleProvider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
+import { useNavigate } from "react-router";
 
 
 export default function Dashboard() {
-    const {userName} = useStore(
+
+    const navigate = useNavigate()
+
+    const {userName, createRoute} = useStore(
         useShallow((state) => ({
-            userName: state.userName
+            userName: state.userName,
+            createRoute: state.createRoute
         }))
     )
 
     const handleActionClick = async () => {
         if(userName){
-            alert(`Hello, ${userName}`)
+            const id = crypto.randomUUID()
+            createRoute(id)
+            navigate(`/routeDetails/${id}`)
         }else{
             try {
                 await signInWithPopup(auth, googleProvider)

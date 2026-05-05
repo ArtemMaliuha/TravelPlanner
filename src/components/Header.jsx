@@ -4,6 +4,7 @@ import { auth, googleProvider } from "../firebase.js"
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth"
 import { useStore } from "../store/store.jsx"
 import { useShallow } from "zustand/shallow"
+import { Link } from "react-router"
 
 export default function Header() {
     const {userPhoto, userName} = useStore(
@@ -31,7 +32,7 @@ export default function Header() {
         <header className="flex w-full border-b-[2px] border-gray-200 h-[56px] items-center justify-between">
             <div className="w-auto ml-[48px] flex">
                 <VscCompass className="mr-[6px]" style={{transform: 'scaleY(-1)'}} size={28}/>
-                <span className="text-2xl font-medium">Travel Planner</span>
+                <Link to="/" className="text-2xl font-medium">Travel Planner</Link>
             </div>
             <div className={userName ? "w-auto flex" : "hidden"}>
                 <p className="text-[20px] pt-[3px] ml-[24px] font-medium">My Trips</p>
