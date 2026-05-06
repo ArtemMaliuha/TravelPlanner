@@ -5,6 +5,7 @@ import { useShallow } from "zustand/shallow";
 import { auth, googleProvider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router";
+import RouteCard from "./RouteCard";
 
 
 export default function Dashboard() {
@@ -50,6 +51,9 @@ export default function Dashboard() {
                         <input type="text" placeholder="Search" className="h-7 text-[18px] px-2 py-1"/>
                     </div>
                 </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4 mt-4">
+                <RouteCard />
             </div>
         </div>
     )
