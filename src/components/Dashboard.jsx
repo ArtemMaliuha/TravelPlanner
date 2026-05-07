@@ -12,10 +12,11 @@ export default function Dashboard() {
 
     const navigate = useNavigate()
 
-    const {userName, createRoute} = useStore(
+    const {userName, createRoute, routes} = useStore(
         useShallow((state) => ({
             userName: state.userName,
-            createRoute: state.createRoute
+            createRoute: state.createRoute,
+            routes: state.routes
         }))
     )
 
@@ -32,6 +33,10 @@ export default function Dashboard() {
             }
         }
     }
+
+    const routeCardsElement = routes.map(route => {
+        return <RouteCard key={route.id} id={route.id}/>
+    })
 
     return (
         <div className="ml-12 mr-7 mt-3">
@@ -53,7 +58,7 @@ export default function Dashboard() {
                 </div>
             </div>
             <div className="grid grid-cols-3 gap-4 mt-4">
-                <RouteCard />
+                {routeCardsElement}
             </div>
         </div>
     )

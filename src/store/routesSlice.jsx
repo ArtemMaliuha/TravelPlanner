@@ -11,5 +11,9 @@ export const createRoutesSlice = (set,get) => ({
         }
 
         state.routes.push(route)
+    }),
+
+    deleteRoute: (routeId) => set((state) => {
+        state.routes = state.routes.filter(route => route.id !== routeId)
     })
 })

@@ -1,9 +1,20 @@
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { TiPencil } from "react-icons/ti";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useStore } from "../store/store";
+import { useShallow } from "zustand/shallow";
+import { useNavigate } from "react-router";
 
+export default function RouteCard({id}) {
 
-export default function RouteCard() {
+    const navigate = useNavigate()
+
+    const {deleteRoute} = useStore(
+        useShallow((state) => ({
+            deleteRoute: state.deleteRoute
+        }))
+    )
+
     return(
         <div className="border-gray-200 border-[2px] p-2.5 overflow-x-hidden rounded-xl">
             <div className="flex justify-between h-24">
@@ -12,7 +23,7 @@ export default function RouteCard() {
             </div>
             <div className="flex justify-between mt-2 mx-1">
                 <div>
-                    <h3 className="font-bold text-[18px] m-0">Weekend in mountains</h3>
+                    <h3 className="font-bold text-[18px] m-0">{id}</h3>
                     <p className="mt-[-4px]">Start-end date</p>
                     <p className="flex items-center"><HiOutlineLocationMarker className="ml-[-2px] mr-[2px]"/> Nepal, Lukla</p>
                 </div>
@@ -21,8 +32,8 @@ export default function RouteCard() {
             <div className="flex justify-between mt-1 mr-1 items-center">
                 <p className="bg-gray-200 px-2 pb-1 border-none rounded-full">2 stops</p>
                 <div className="flex gap-2">
-                    <button className="flex justify-center items-center bg-[#eceef0] w-7 h-7 border-none rounded-md hover:bg-blue-200 group"><TiPencil size={20} className="group-hover:text-blue-700"/></button>
-                    <button className="flex justify-center items-center bg-[#eceef0] w-7 h-7 border-none rounded-md hover:bg-red-200 group"><FaRegTrashAlt size={17} className="group-hover:text-red-700"/></button>
+                    <button onClick={() => navigate(`/routeDetails/${id}`)} className="flex justify-center items-center bg-[#eceef0] w-7 h-7 border-none rounded-md hover:bg-blue-200 group"><TiPencil size={20} className="group-hover:text-blue-700"/></button>
+                    <button onClick={() => deleteRoute(id)} className="flex justify-center items-center bg-[#eceef0] w-7 h-7 border-none rounded-md hover:bg-red-200 group"><FaRegTrashAlt size={17} className="group-hover:text-red-700"/></button>
                 </div>
             </div>
         </div>
