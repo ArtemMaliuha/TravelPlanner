@@ -5,15 +5,85 @@ import { useParams } from "react-router";
 import { FiPlus } from "react-icons/fi";
 import { FaCheck } from "react-icons/fa";
 import { VscSearch } from "react-icons/vsc";
+import { useRef } from "react";
+import { IoIosSave } from "react-icons/io";
+import { useNavigate } from "react-router";
 
 export default function RouteDetails() {
-    const {routes} = useStore(
+    const {routes, changeRouteName, changeStartDate, changeEndDate} = useStore(
         useShallow((state) => ({
-            routes: state.routes
+            routes: state.routes,
+            changeRouteName: state.changeRouteName,
+            changeStartDate: state.changeStartDate,
+            changeEndDate: state.changeEndDate
         }))
     )
 
+    const navigate = useNavigate()
+    const inputNameRef = useRef(null)
     const { id } = useParams()
+    const thisRoute = routes.find(route => route.id === id)
+
+    const handleSaveNameClick = () => {
+        const newName = inputNameRef.current.value
+
+        if(newName.trim() === ""){
+            alert("Please enter a route name")
+            return
+        }else {
+            changeRouteName(id, newName)
+        }
+    }
+
+    const handleStartDateChange = (e) => {
+        if(e.target.value && thisRoute.endDate){
+            const startDate = new Date(e.target.value)
+            const endDate = new Date(thisRoute.endDate)
+            console.log(startDate)
+            console.log(endDate)
+
+            if(startDate > endDate){
+                alert("Start date cannot be after the end date")
+                e.target.value = thisRoute.startDate || ""
+            }else{
+                changeStartDate(id, e.target.value)
+            }
+        }else if(e.target.value && !thisRoute.endDate){
+            changeStartDate(id, e.target.value)
+        }
+    }
+
+    const handleEndDateChange = (e) => {
+        if(e.target.value && thisRoute.startDate){
+            const startDate = new Date(thisRoute.startDate)
+            const endDate = new Date(e.target.value)
+
+            if(startDate > endDate){
+                alert("End date cannot be before the start date")
+                e.target.value = thisRoute.endDate || ""
+            }else{
+                changeEndDate(id, e.target.value)
+            }
+        }else if(e.target.value && !thisRoute.startDate){
+            changeEndDate(id, e.target.value)
+        }
+    }
+
+    const handleSaveRouteClick = () => {
+        const fields = [
+            {val: thisRoute.name.trim(), label: "name"},
+            {val: thisRoute.startDate, label: "start date"},
+            {val: thisRoute.endDate, label: "end date"}
+        ]
+
+        const missingFields = fields.filter(f => !f.val).map(f => f.label)
+
+        if(missingFields.length > 0){
+            alert(`The following fields are empty: ${missingFields.join(",")}`)
+        }else{
+            navigate("/")
+        }
+    }
 
     return(
         <>
@@ -21,14 +91,16 @@ export default function RouteDetails() {
             <div className="ml-12 mr-7 mt-5">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center border-gray-200 border-[2px] rounded-lg pr-2 pl-1">
-                        <input type="text" placeholder="Enter route name" className="h-7 text-[18px] pr-2 pl-1 py-1"/>
-                        <FaCheck />
+                        <input type="text" placeholder="Enter route name" className="h-7 text-[18px] pr-2 pl-1 py-1" ref={inputNameRef} defaultValue={thisRoute.name}/>
+                        <FaCheck onClick={handleSaveNameClick}/>
                     </div>
-                    <div>
-                        <input type="date" />
-                        <input type="date" />
+                    <div className="flex">
+                        <p className="mr-1 text-[18px]">Start date:</p>
+                        <input className="w-29 text-[18px]" type="date" onChange={(e) => handleStartDateChange(e)} value={thisRoute.startDate ? thisRoute.startDate : ""}/>
+                        <p className="ml-3 mr-1 text-[18px]">End date:</p>
+                        <input className="w-29 text-[18px]" type="date" onChange={(e) => handleEndDateChange(e)} value={thisRoute.endDate ? thisRoute.endDate : ""}/>
                     </div>
-                    <button className="flex items-center bg-[#03969b] text-white py-1 px-2 border-none rounded-xl"><FiPlus size={18} className="mr-1"/>Save this route</button>
+                    <button className="flex items-center bg-[#03969b] text-white py-1 px-2 border-none rounded-xl" onClick={handleSaveRouteClick}><IoIosSave size={18} className="mr-1"/>Save this route</button>
                 </div>
                 <div className="mt-6 flex">
                     <div className="w-[25%] h-[80vh] border-gray-300 border-[2px] rounded-xl">
@@ -39,7 +111,7 @@ export default function RouteDetails() {
                         </div>
                         <p className="ml-2.5">Search to add ideas</p>
                     </div>
-                    <div className="ml-8 w-[75%] h-[80vh] border-gray-200 border-[2px] rounded-lg flex">
+                    <div className="ml-8 w-[75%] h-[80vh] border-gray-300 border-[2px] rounded-xl flex">
                         <div className="ml-2.5 mt-2 w-[50%]">
                             added cards
                         </div>

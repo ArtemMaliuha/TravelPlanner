@@ -7,7 +7,10 @@ export const createRoutesSlice = (set,get) => ({
 
     createRoute: (routeId) => set((state) => {
         const route = {
-            id: routeId
+            id: routeId,
+            name: "",
+            startDate: "",
+            endDate: ""
         }
 
         state.routes.push(route)
@@ -15,5 +18,17 @@ export const createRoutesSlice = (set,get) => ({
 
     deleteRoute: (routeId) => set((state) => {
         state.routes = state.routes.filter(route => route.id !== routeId)
+    }),
+
+    changeRouteName: (routeId, routeName) => set((state) => {
+        state.routes = state.routes.map(route => route.id === routeId ? {...route, name: routeName} : route)
+    }),
+
+    changeStartDate: (routeId, startDate) => set((state) => {
+        state.routes = state.routes.map(route => route.id === routeId ? {...route, startDate: startDate} : route)
+    }),
+
+    changeEndDate: (routeId, endDate) => set((state) => {
+        state.routes = state.routes.map(route => route.id = routeId ? {...route, endDate: endDate} : route)
     })
 })
