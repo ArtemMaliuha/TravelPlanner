@@ -5,9 +5,21 @@ import { useParams } from "react-router";
 import { FiPlus } from "react-icons/fi";
 import { FaCheck } from "react-icons/fa";
 import { VscSearch } from "react-icons/vsc";
-import { useRef } from "react";
+import { useRef, useState, useMemo } from "react";
 import { IoIosSave } from "react-icons/io";
 import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import {v4 as uuidv4} from 'uuid'
+
+const fetchPlacesData = async ({queryKey}) => {
+    const [_key, query, sessionToken] = queryKey
+
+    if (!query) return null
+
+    const response = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?q=${encodeURIComponent(query)}&session_token=${sessionToken}&limit=10&types=poi%2Cplace%2Caddress%2Clocality&poi_category=museum%2Ctourist_attraction%2Cmonument%2Cpark%2Chistoric_site%2Ccafe%2Crestaurant%2Chotel%2Chostel&access_token=${import.meta.env.VITE_MAPBOX_API_KEY}`)
+
+    return await response.json()
+}
 
 export default function RouteDetails() {
     const {routes, changeRouteName, changeStartDate, changeEndDate} = useStore(
@@ -19,8 +31,22 @@ export default function RouteDetails() {
         }))
     )
 
+    const [searchQuery, setSearchQuery] = useState("")
+
+    const sessionToken = useMemo(() => uuidv4(), [])
+
+    const {data} = useQuery({
+        queryKey: ['places', searchQuery, sessionToken],
+        queryFn: fetchPlacesData,
+        enabled: !!searchQuery,
+        refetchOnWindowFocus: false
+    })
+
+    console.log(data)
+
     const navigate = useNavigate()
     const inputNameRef = useRef(null)
+    const timerRef = useRef(null)
     const { id } = useParams()
     const thisRoute = routes.find(route => route.id === id)
 
@@ -85,6 +111,20 @@ export default function RouteDetails() {
         }
     }
 
+    const handleIdeaSearchChange = (e) => {
+        const value = e.target.value 
+
+        if(timerRef.current){
+            clearTimeout(timerRef.current)
+        }
+
+        if(value ?? value !== searchQuery){
+            timerRef.current = setTimeout(() => {
+                setSearchQuery(value)
+            }, 1500)
+        }
+    }
+
     return(
         <>
             <Header />
@@ -107,7 +147,7 @@ export default function RouteDetails() {
                         <p className="ml-2.5 mt-2 text-[20px] font-bold">Trip ideas</p>
                         <div className="flex items-center ml-2 border-gray-200 border-[2px] rounded-lg px-2 mr-3 my-1">
                             <VscSearch />
-                            <input type="text" placeholder="Search for places and activities" className="h-7 w-[100%] text-[18px] px-2 py-1"/>
+                            <input type="text" placeholder="Search for places and activities" className="h-7 w-[100%] text-[18px] px-2 py-1" onChange={(e) => handleIdeaSearchChange(e)}/>
                         </div>
                         <p className="ml-2.5">Search to add ideas</p>
                     </div>
