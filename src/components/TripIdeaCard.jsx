@@ -1,14 +1,20 @@
 import { HiOutlineLocationMarker } from "react-icons/hi";
+import { FaRegBuilding } from "react-icons/fa";
 
-export default function TripIdeaCard() {
+export default function TripIdeaCard({id, name, country, city, address, index}) {
+    console.log(id)
     return(
-        <div className="flex border-gray-200 border-[2px] rounded-lg p-2 mx-2">
-            <img src="https://loremflickr.com/800/600/travel,nature,landmark" className="w-15 h-15 border-none rounded-xl"/>
-            <div className="ml-2.5 flex flex-col justify-between">
-                <h3 className="font-bold text-[18px]">Eiffel Tower</h3>
+        <div className="flex border-gray-200 border-[2px] rounded-lg p-2 mx-2 min-w-0 mb-2">
+            <img src={`https://loremflickr.com/800/600/travel,nature,landmark?lock=${index}`} className="w-20 h-20 border-none rounded-xl"/>
+            <div className="ml-2.5 flex flex-col justify-between flex-1 min-w-0">
+                <h3 className="font-bold text-[18px] truncate w-55">{name}</h3>
                 <div className="flex items-center">
                     <HiOutlineLocationMarker />
-                    <p className="text-[18px]">Paris, France</p>
+                    <p className="text-[18px] ml-[2px] truncate w-52">{city}, {country}</p>
+                </div>
+                <div className="flex items-center">
+                    <FaRegBuilding />
+                    <p className="text-[16px] ml-1 truncate w-52">{address}</p>
                 </div>
             </div>
         </div>

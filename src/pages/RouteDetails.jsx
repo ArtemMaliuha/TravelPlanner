@@ -126,6 +126,10 @@ export default function RouteDetails() {
         }
     }
 
+    const tripIdeaCardsElement = data?.suggestions.map((suggestion, index) => {
+        return <TripIdeaCard key={suggestion.mapbox_id} id={suggestion.mapbox_id} name={suggestion.name} address={suggestion.address} country={suggestion.context.country.name} city={suggestion.context.place.name} index={index}/>
+    })
+
     return(
         <>
             <Header />
@@ -150,8 +154,9 @@ export default function RouteDetails() {
                             <VscSearch />
                             <input type="text" placeholder="Search for places and activities" className="h-7 w-[100%] text-[18px] px-2 py-1" onChange={(e) => handleIdeaSearchChange(e)}/>
                         </div>
-                        <p className="ml-2.5">Search to add ideas</p>
-                        <TripIdeaCard />
+                        <div className="overflow-y-auto h-[68vh] no-scrollbar mt-2">
+                            {tripIdeaCardsElement}
+                        </div>
                     </div>
                     <div className="ml-8 w-[75%] h-[80vh] border-gray-300 border-[2px] rounded-xl flex">
                         <div className="ml-2.5 mt-2 w-[50%]">
