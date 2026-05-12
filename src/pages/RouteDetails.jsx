@@ -10,6 +10,7 @@ import { IoIosSave } from "react-icons/io";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import {v4 as uuidv4} from 'uuid'
+import TripIdeaCard from "../components/TripIdeaCard"
 
 const fetchPlacesData = async ({queryKey}) => {
     const [_key, query, sessionToken] = queryKey
@@ -150,6 +151,7 @@ export default function RouteDetails() {
                             <input type="text" placeholder="Search for places and activities" className="h-7 w-[100%] text-[18px] px-2 py-1" onChange={(e) => handleIdeaSearchChange(e)}/>
                         </div>
                         <p className="ml-2.5">Search to add ideas</p>
+                        <TripIdeaCard />
                     </div>
                     <div className="ml-8 w-[75%] h-[80vh] border-gray-300 border-[2px] rounded-xl flex">
                         <div className="ml-2.5 mt-2 w-[50%]">
