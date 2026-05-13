@@ -66,8 +66,6 @@ export default function RouteDetails() {
         if(e.target.value && thisRoute.endDate){
             const startDate = new Date(e.target.value)
             const endDate = new Date(thisRoute.endDate)
-            console.log(startDate)
-            console.log(endDate)
 
             if(startDate > endDate){
                 alert("Start date cannot be after the end date")
@@ -123,10 +121,12 @@ export default function RouteDetails() {
             timerRef.current = setTimeout(() => {
                 setSearchQuery(value)
             }, 1500)
+        }else if(!value){
+            setSearchQuery("")
         }
     }
 
-    const tripIdeaCardsElement = data?.suggestions.map((suggestion, index) => {
+    const tripIdeaCardsElement = data?.suggestions?.length === 0 ? <p className="ml-2.5 text-[24px]">No results found</p> : data?.suggestions.map((suggestion, index) => {
         return <TripIdeaCard key={suggestion.mapbox_id} id={suggestion.mapbox_id} name={suggestion.name} address={suggestion.address} country={suggestion.context.country.name} city={suggestion.context.place.name} index={index}/>
     })
 
@@ -155,7 +155,7 @@ export default function RouteDetails() {
                             <input type="text" placeholder="Search for places and activities" className="h-7 w-[100%] text-[18px] px-2 py-1" onChange={(e) => handleIdeaSearchChange(e)}/>
                         </div>
                         <div className="overflow-y-auto h-[68vh] no-scrollbar mt-2">
-                            {tripIdeaCardsElement}
+                            {searchQuery === "" ? "" : tripIdeaCardsElement}
                         </div>
                     </div>
                     <div className="ml-8 w-[75%] h-[80vh] border-gray-300 border-[2px] rounded-xl flex">
