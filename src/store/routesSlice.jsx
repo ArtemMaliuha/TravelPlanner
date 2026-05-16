@@ -1,5 +1,6 @@
 const initialState = {
-    routes: []
+    routes: [],
+    foundIdeas: []
 }
 
 export const createRoutesSlice = (set,get) => ({
@@ -29,6 +30,21 @@ export const createRoutesSlice = (set,get) => ({
     }),
 
     changeEndDate: (routeId, endDate) => set((state) => {
-        state.routes = state.routes.map(route => route.id = routeId ? {...route, endDate: endDate} : route)
+        state.routes = state.routes.map(route => route.id === routeId ? {...route, endDate: endDate} : route)
+    }),
+
+    addIdea: (currentIdea) => set((state) => {
+        state.foundIdeas.push(currentIdea)
+    }),
+
+    addImageUrl: (id, imageUrl) => set((state) => {
+        const idea = state.foundIdeas.find(idea => idea.id === id)
+        if(idea){
+            idea.imageUrl = imageUrl
+        }
+    }),
+
+    clearFoundIdeas: () => set((state) => {
+        state.foundIdeas = []
     })
 })
