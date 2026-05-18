@@ -11,7 +11,8 @@ export const createRoutesSlice = (set,get) => ({
             id: routeId,
             name: "",
             startDate: "",
-            endDate: ""
+            endDate: "",
+            cards: []
         }
 
         state.routes.push(route)
@@ -46,5 +47,15 @@ export const createRoutesSlice = (set,get) => ({
 
     clearFoundIdeas: () => set((state) => {
         state.foundIdeas = []
+    }),
+
+    addSavedIdea: (currentIdea, routeId) => set((state) => {
+        const currentRoute = state.routes.find(route => route.id === routeId)
+        currentRoute.cards.push(currentIdea)
+    }),
+
+    updateRouteCards: (id, newCardsArray) => set((state) => {
+        const currentRoute = state.routes.find(route => route.id === id)
+        currentRoute.cards = newCardsArray
     })
 })

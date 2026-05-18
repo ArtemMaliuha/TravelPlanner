@@ -11,10 +11,11 @@ import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import {v4 as uuidv4} from 'uuid'
 import TripIdeaCard from "../components/TripIdeaCard"
-import { closestCorners, DndContext, DragOverlay } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { closestCorners, DndContext, DragOverlay, pointerWithin } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import TripIdeaCardPreview from "../components/TripIdeaCardPreview";
 import { current } from "immer";
+import AddedIdeasArea from "../components/AddedIdeasArea";
 
 const fetchPlacesData = async ({queryKey}) => {
     const [_key, query, sessionToken] = queryKey
@@ -27,13 +28,16 @@ const fetchPlacesData = async ({queryKey}) => {
 }
 
 export default function RouteDetails() {
-    const {routes, changeRouteName, changeStartDate, changeEndDate, clearFoundIdeas} = useStore(
+    const {routes, changeRouteName, changeStartDate, changeEndDate, clearFoundIdeas, addSavedIdea, foundIdeas, updateRouteCards} = useStore(
         useShallow((state) => ({
             routes: state.routes,
             changeRouteName: state.changeRouteName,
             changeStartDate: state.changeStartDate,
             changeEndDate: state.changeEndDate,
-            clearFoundIdeas: state.clearFoundIdeas
+            clearFoundIdeas: state.clearFoundIdeas,
+            addSavedIdea: state.addSavedIdea,
+            foundIdeas: state.foundIdeas,
+            updateRouteCards: state.updateRouteCards
         }))
     )
 
@@ -137,11 +141,50 @@ export default function RouteDetails() {
         setActiveId(event.active.id)
     }
 
-    const tripIdeaCardsElement = data?.suggestions?.length === 0 ? <p className="ml-2.5 text-[24px]">No results found</p> : data?.suggestions.map((suggestion, index) => {
+    const handleDragEnd = (event) => {
+        const {active, over} = event
+
+        if(foundIdeas.some(idea => idea.id === active.id)){
+            if(!over){
+                setActiveId(null)
+                return
+            }
+
+            if(over.id === id){
+                const currentIdea = foundIdeas.find(idea => idea.id === active.id)
+                if(currentIdea){
+                    addSavedIdea(currentIdea, id)
+                }
+            }
+
+            setActiveId(null)
+        }else if(thisRoute.cards.some(idea => idea.id === active.id)){
+            
+            if(!over || active.id === over.id) {
+            setActiveId(null)
+            return
+            }
+
+            const originalPos = thisRoute.cards.findIndex(card => card.id === active.id)
+            const newPos = thisRoute.cards.findIndex(card => card.id === over.id)
+
+            if (originalPos !== -1 && newPos !== -1) {
+            const newCardsArray = arrayMove(thisRoute.cards, originalPos, newPos)
+            
+            updateRouteCards(id, newCardsArray) 
+        }
+
+            setActiveId(null)
+        }
+    }
+
+    const filteredData = data?.suggestions?.filter(item => thisRoute.cards.every(idea => idea.id !== item.mapbox_id))
+
+    const tripIdeaCardsElement = data?.suggestions?.length === 0 ? <p className="ml-2.5 text-[24px]">No results found</p> : filteredData?.map((suggestion, index) => {
         return <TripIdeaCard key={suggestion.mapbox_id} id={suggestion.mapbox_id} name={suggestion.name} address={suggestion.address} country={suggestion.context.country.name} city={suggestion.context.place.name} index={index}/>
     })
 
-    const addedItemsIds = ['id1', 'id2', 'id3']
+    const addedItemsIds = thisRoute.cards.map(card => card.id)
 
     return(
         <>
@@ -160,7 +203,7 @@ export default function RouteDetails() {
                     </div>
                     <button className="flex items-center bg-[#03969b] text-white py-1 px-2 border-none rounded-xl" onClick={handleSaveRouteClick}><IoIosSave size={18} className="mr-1"/>Save this route</button>
                 </div>
-                <DndContext collisionDetection={closestCorners} onDragStart={handleDragStart}>
+                <DndContext collisionDetection={pointerWithin} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <div className="mt-6 flex">
                         <div className="w-[25%] h-[80vh] border-gray-300 border-[2px] rounded-xl">
                             <p className="ml-2.5 mt-2 text-[20px] font-bold">Trip ideas</p>
@@ -173,10 +216,9 @@ export default function RouteDetails() {
                             </div>
                         </div>
                         <div className="ml-8 w-[75%] h-[80vh] border-gray-300 border-[2px] rounded-xl flex">
-                            <div className="ml-2.5 mt-2 w-[50%]">
-                                <SortableContext items={addedItemsIds} strategy={verticalListSortingStrategy}>
-                                    added cards
-                                </SortableContext>
+                            <div className="ml-2.5 mt-2 w-[50%] min-h-[70%]">
+                                <p className=" text-[20px] font-bold">Added ideas</p>
+                                <AddedIdeasArea id={id} addedItemsIds={addedItemsIds} thisRoute={thisRoute}/>
                             </div>
                             <img src="../../routePlaceholder.jpg" className="w-[100%]"/>
                         </div>
@@ -184,11 +226,8 @@ export default function RouteDetails() {
                     <DragOverlay>
                         {activeId ? (() => {
                             const currentCard = data?.suggestions.find(item => item.mapbox_id === activeId)
-
                             if (!currentCard) return null
-
                             return (<TripIdeaCardPreview key={currentCard.mapbox_id} id={currentCard.mapbox_id} />) 
-                        
                         })() : null}
                     </DragOverlay>
                 </DndContext>

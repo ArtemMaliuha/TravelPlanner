@@ -35,7 +35,9 @@ export default function TripIdeaCard({id, name, country, city, address, index}) 
         imageUrl: ""
     }
 
-    addIdea(currentIdea)
+    useEffect(() => {
+        addIdea(currentIdea)
+    }, [])
     
     const { data } = useQuery({
         queryKey: ['images', city, country, name],
