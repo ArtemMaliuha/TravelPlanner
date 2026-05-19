@@ -181,10 +181,10 @@ export default function RouteDetails() {
     const filteredData = data?.suggestions?.filter(item => thisRoute.cards.every(idea => idea.id !== item.mapbox_id))
 
     const tripIdeaCardsElement = data?.suggestions?.length === 0 ? <p className="ml-2.5 text-[24px]">No results found</p> : filteredData?.map((suggestion, index) => {
-        return <TripIdeaCard key={suggestion.mapbox_id} id={suggestion.mapbox_id} name={suggestion.name} address={suggestion.address} country={suggestion.context.country.name} city={suggestion.context.place.name} index={index}/>
+        return <TripIdeaCard key={suggestion.mapbox_id} id={suggestion.mapbox_id} name={suggestion.name} address={suggestion.address || "—"} country={suggestion.context.country?.name || "—"} city={suggestion.context.place?.name || "—"} index={index}/>
     })
 
-    const addedItemsIds = thisRoute.cards.map(card => card.id)
+    const addedItemsIds = (thisRoute.cards || []).map(card => card.id)
 
     return(
         <>

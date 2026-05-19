@@ -24,7 +24,7 @@ export default function AddedIdeaCard({id, name, country, city, address, index, 
                 </div>
                 <div className="flex items-center">
                     <FaRegBuilding />
-                    <p className="text-[16px] ml-1 truncate w-52">{address}</p>
+                    <p className="text-[16px] ml-1 truncate w-46" title={address}>{address}</p>
                 </div>
             </div>
         </div>
