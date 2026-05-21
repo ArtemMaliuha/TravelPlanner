@@ -57,5 +57,10 @@ export const createRoutesSlice = (set,get) => ({
     updateRouteCards: (id, newCardsArray) => set((state) => {
         const currentRoute = state.routes.find(route => route.id === id)
         currentRoute.cards = newCardsArray
+    }),
+
+    deleteAddedIdea: (ideaId, routeId) => set((state) => {
+        const currentRoute = state.routes.find(route => route.id === routeId)
+        currentRoute.cards = currentRoute.cards.filter(card => card.id !== ideaId)
     })
 })

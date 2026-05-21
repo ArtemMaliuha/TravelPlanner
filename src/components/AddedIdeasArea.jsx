@@ -7,7 +7,7 @@ export default function AddedIdeasArea({id, addedItemsIds, thisRoute}) {
     const {setNodeRef, isOver} = useDroppable({id: id})
 
     const addedIdeasElement = (thisRoute.cards || []).map(card => {
-        return <AddedIdeaCard id={card.id} key={card.id} name={card.name} city={card.city} country={card.country} address={card.address} imageUrl={card.imageUrl} index={card.index}/>
+        return <AddedIdeaCard id={card.id} key={card.id} name={card.name} city={card.city} country={card.country} address={card.address} imageUrl={card.imageUrl} index={card.index} thisRoute={thisRoute}/>
     })
 
     return (

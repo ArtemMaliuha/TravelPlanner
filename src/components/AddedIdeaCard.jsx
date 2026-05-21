@@ -2,9 +2,17 @@ import { FaRegBuilding } from "react-icons/fa";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { useStore } from "../store/store";
+import { useShallow } from "zustand/shallow";
 
+export default function AddedIdeaCard({id, name, country, city, address, index, imageUrl, thisRoute}) {
 
-export default function AddedIdeaCard({id, name, country, city, address, index, imageUrl}) {
+    const {deleteAddedIdea} = useStore(
+        useShallow((state) => ({
+            deleteAddedIdea: state.deleteAddedIdea
+        }))
+    )
 
     const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: id})
 
@@ -25,6 +33,7 @@ export default function AddedIdeaCard({id, name, country, city, address, index, 
                 <div className="flex items-center">
                     <FaRegBuilding />
                     <p className="text-[16px] ml-1 truncate w-46" title={address}>{address}</p>
+                    <button onClick={() => deleteAddedIdea(id, thisRoute.id)} onPointerDown={(e) => e.stopPropagation()} className="flex justify-center items-center bg-[#eceef0] w-7 h-7 border-none rounded-md hover:bg-red-200 group"><FaRegTrashAlt size={17} className="group-hover:text-red-700"/></button>
                 </div>
             </div>
         </div>
