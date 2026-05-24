@@ -27,6 +27,27 @@ const fetchPlacesData = async ({queryKey}) => {
     return await response.json()
 }
 
+const retrievePlaceCoordinates = async (mapboxId, sessionToken) => {
+    const response = await fetch(`https://api.mapbox.com/search/searchbox/v1/retrieve/${mapboxId}?session_token=${sessionToken}&access_token=${import.meta.env.VITE_MAPBOX_API_KEY}`)
+
+    const data = await response.json()
+    
+    const [lng, lat] = data.features[0].geometry.coordinates
+    return { lng, lat }
+}
+
+const fetchRoute = async ({queryKey}) => {
+    const [_key, cards] = queryKey
+
+    if (cards.length < 2) return null
+
+    const coordinates = cards.map(card => `${card.lng},${card.lat}`).join(";")
+
+    const response = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${coordinates}?geometries=polyline&access_token=${import.meta.env.VITE_MAPBOX_API_KEY}`)
+
+    return await response.json()
+}
+
 export default function RouteDetails() {
     const {routes, changeRouteName, changeStartDate, changeEndDate, clearFoundIdeas, addSavedIdea, foundIdeas, updateRouteCards} = useStore(
         useShallow((state) => ({
@@ -53,13 +74,33 @@ export default function RouteDetails() {
         refetchOnWindowFocus: false
     })
 
-    console.log(data)
-
     const navigate = useNavigate()
     const inputNameRef = useRef(null)
     const timerRef = useRef(null)
     const { id } = useParams()
     const thisRoute = routes.find(route => route.id === id)
+
+    const {data: routeData} = useQuery({
+        queryKey: ['route', thisRoute.cards],
+        queryFn: fetchRoute,
+        enabled: thisRoute.cards.length >= 2
+    })
+
+    const staticMapUrl = useMemo(() => {
+        if (!routeData?.routes?.[0]?.geometry) return ""
+
+        const polyline = encodeURIComponent(
+            routeData.routes[0].geometry
+        )
+
+        const markers = routeData.waypoints.map((waypoint, index) => {
+            const [lng, lat] = waypoint.location
+
+            return `pin-s-${index + 1}+ff0000(${lng},${lat})`
+        }).join(",")
+
+        return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${markers},path-5+0066ff-0.7(${polyline})/auto/1000x500?padding=80&access_token=${import.meta.env.VITE_MAPBOX_API_KEY}`
+    }, [routeData, thisRoute.cards])
 
     const handleSaveNameClick = () => {
         const newName = inputNameRef.current.value
@@ -141,7 +182,7 @@ export default function RouteDetails() {
         setActiveId(event.active.id)
     }
 
-    const handleDragEnd = (event) => {
+    const handleDragEnd = async (event) => {
         const {active, over} = event
 
         if(foundIdeas.some(idea => idea.id === active.id)){
@@ -153,7 +194,20 @@ export default function RouteDetails() {
             if(over.id === id){
                 const currentIdea = foundIdeas.find(idea => idea.id === active.id)
                 if(currentIdea){
-                    addSavedIdea(currentIdea, id)
+                    try{
+                        const { lng, lat } = await retrievePlaceCoordinates(currentIdea.id, sessionToken)
+
+                        const ideaWithCoordinates = {
+                        ...currentIdea,
+                        lng,
+                        lat
+                    }
+
+                        addSavedIdea(ideaWithCoordinates, id)
+                    }catch (error) {
+                        console.error(error)
+                    }
+
                 }
             }
 
@@ -216,11 +270,11 @@ export default function RouteDetails() {
                             </div>
                         </div>
                         <div className="ml-8 w-[75%] h-[80vh] border-gray-300 border-[2px] rounded-xl flex">
-                            <div className="ml-2.5 mt-2 w-[50%] min-h-[70%]">
+                            <div className="ml-2.5 mt-2 w-90 min-h-[70%]">
                                 <p className=" text-[20px] font-bold">Added ideas</p>
                                 <AddedIdeasArea id={id} addedItemsIds={addedItemsIds} thisRoute={thisRoute}/>
                             </div>
-                            <img src="../../routePlaceholder.jpg" className="w-[100%]"/>
+                            <img src={staticMapUrl ? staticMapUrl : "../../routePlaceholder.jpg"} className="w-[65%] border-none rounded-xl"/>
                         </div>
                     </div>
                     <DragOverlay>

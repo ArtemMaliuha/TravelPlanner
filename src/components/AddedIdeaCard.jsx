@@ -22,7 +22,7 @@ export default function AddedIdeaCard({id, name, country, city, address, index, 
     }
 
     return(
-        <div className="flex border-gray-200 border-[2px] rounded-lg p-2 mr-2 min-w-0 mb-2" ref={setNodeRef} {...attributes} {...listeners} style={style}>
+        <div className="flex border-gray-200 border-[2px] rounded-lg p-2 mr-2 min-w-0 mb-2 w-86" ref={setNodeRef} {...attributes} {...listeners} style={style}>
             <img src={imageUrl ? imageUrl : `https://loremflickr.com/800/600/travel,nature,landmark?lock=${index}`} className="w-20 h-20 border-none rounded-xl"/>
             <div className="ml-2.5 flex flex-col justify-between flex-1 min-w-0">
                 <h3 className="font-bold text-[18px] truncate w-55">{name}</h3>
