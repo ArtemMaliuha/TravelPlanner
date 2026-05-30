@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 import { FiPlus } from "react-icons/fi";
 import { FaCheck } from "react-icons/fa";
 import { VscSearch } from "react-icons/vsc";
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { IoIosSave } from "react-icons/io";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -49,7 +49,7 @@ const fetchRoute = async ({queryKey}) => {
 }
 
 export default function RouteDetails() {
-    const {routes, changeRouteName, changeStartDate, changeEndDate, clearFoundIdeas, addSavedIdea, foundIdeas, updateRouteCards} = useStore(
+    const {routes, changeRouteName, changeStartDate, changeEndDate, clearFoundIdeas, addSavedIdea, foundIdeas, updateRouteCards, updateRouteMapUrl} = useStore(
         useShallow((state) => ({
             routes: state.routes,
             changeRouteName: state.changeRouteName,
@@ -58,7 +58,8 @@ export default function RouteDetails() {
             clearFoundIdeas: state.clearFoundIdeas,
             addSavedIdea: state.addSavedIdea,
             foundIdeas: state.foundIdeas,
-            updateRouteCards: state.updateRouteCards
+            updateRouteCards: state.updateRouteCards,
+            updateRouteMapUrl: state.updateRouteMapUrl
         }))
     )
 
@@ -101,6 +102,14 @@ export default function RouteDetails() {
 
         return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${markers},path-5+0066ff-0.7(${polyline})/auto/1000x500?padding=80&access_token=${import.meta.env.VITE_MAPBOX_API_KEY}`
     }, [routeData, thisRoute.cards])
+
+    useEffect(() => {
+        if(staticMapUrl && thisRoute.mapUrl !== staticMapUrl){
+            updateRouteMapUrl(id, staticMapUrl)
+        }else if(!staticMapUrl){
+            updateRouteMapUrl(id, "")
+        }
+    }, [staticMapUrl])
 
     const handleSaveNameClick = () => {
         const newName = inputNameRef.current.value
@@ -274,7 +283,7 @@ export default function RouteDetails() {
                                 <p className=" text-[20px] font-bold">Added ideas</p>
                                 <AddedIdeasArea id={id} addedItemsIds={addedItemsIds} thisRoute={thisRoute}/>
                             </div>
-                            <img src={staticMapUrl ? staticMapUrl : "../../routePlaceholder.jpg"} className="w-[65%] border-none rounded-xl"/>
+                            <img src={thisRoute.mapUrl ? thisRoute.mapUrl : "../../routePlaceholder.jpg"} className="w-[65%] border-none rounded-xl"/>
                         </div>
                     </div>
                     <DragOverlay>

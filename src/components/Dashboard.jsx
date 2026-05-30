@@ -35,7 +35,7 @@ export default function Dashboard() {
     }
 
     const routeCardsElement = routes.map(route => {
-        return <RouteCard key={route.id} id={route.id}/>
+        return <RouteCard key={route.id} id={route.id} name={route.name} startDate={route.startDate} endDate={route.endDate} cards={route.cards}/>
     })
 
     return (

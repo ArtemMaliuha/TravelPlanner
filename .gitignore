@@ -13,7 +13,6 @@ dist
 dist-ssr
 *.local
 placeholder.jpg
-routePlaceholder.jpg
 
 # Editor directories and files
 .vscode/*

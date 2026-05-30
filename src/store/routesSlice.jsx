@@ -12,7 +12,9 @@ export const createRoutesSlice = (set,get) => ({
             name: "",
             startDate: "",
             endDate: "",
-            cards: []
+            cards: [],
+            mapUrl: "",
+            randomIndex: Math.ceil(Math.random() * 2000)
         }
 
         state.routes.push(route)
@@ -62,5 +64,10 @@ export const createRoutesSlice = (set,get) => ({
     deleteAddedIdea: (ideaId, routeId) => set((state) => {
         const currentRoute = state.routes.find(route => route.id === routeId)
         currentRoute.cards = currentRoute.cards.filter(card => card.id !== ideaId)
+    }),
+
+    updateRouteMapUrl: (routeId, mapUrl) => set((state) => {
+        const currentRoute = state.routes.find(route => route.id === routeId)
+        currentRoute.mapUrl = mapUrl
     })
 })
