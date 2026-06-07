@@ -6,19 +6,24 @@ import { auth, googleProvider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router";
 import RouteCard from "./RouteCard";
+import useInputChange from "../hooks/useInputChange";
 
 
 export default function Dashboard() {
 
     const navigate = useNavigate()
 
-    const {userName, createRoute, routes} = useStore(
+    const {userName, createRoute, routes, searchText, changeSearchText} = useStore(
         useShallow((state) => ({
             userName: state.userName,
             createRoute: state.createRoute,
-            routes: state.routes
+            routes: state.routes,
+            searchText: state.searchText,
+            changeSearchText: state.changeSearchText
         }))
     )
+
+    const routesArray = useInputChange(searchText)
 
     const handleActionClick = async () => {
         if(userName){
@@ -34,7 +39,7 @@ export default function Dashboard() {
         }
     }
 
-    const routeCardsElement = routes.map(route => {
+    const routeCardsElement = routesArray.map(route => {
         return <RouteCard key={route.id} id={route.id} name={route.name} startDate={route.startDate} endDate={route.endDate} cards={route.cards}/>
     })
 
@@ -53,7 +58,7 @@ export default function Dashboard() {
                     <p>filters</p>
                     <div className="flex items-center ml-2 border-gray-200 border-[2px] rounded-lg px-2">
                         <VscSearch />
-                        <input type="text" placeholder="Search" className="h-7 text-[18px] px-2 py-1"/>
+                        <input value={searchText} type="text" placeholder="Search" className="h-7 text-[18px] px-2 py-1" onInput={(e) => changeSearchText(e.target.value)}/>
                     </div>
                 </div>
             </div>

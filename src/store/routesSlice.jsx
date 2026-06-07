@@ -1,6 +1,7 @@
 const initialState = {
     routes: [],
-    foundIdeas: []
+    foundIdeas: [],
+    searchText: ""
 }
 
 export const createRoutesSlice = (set,get) => ({
@@ -69,5 +70,9 @@ export const createRoutesSlice = (set,get) => ({
     updateRouteMapUrl: (routeId, mapUrl) => set((state) => {
         const currentRoute = state.routes.find(route => route.id === routeId)
         currentRoute.mapUrl = mapUrl
+    }),
+
+    changeSearchText: (text) => set((state) => {
+        state.searchText = text
     })
 })

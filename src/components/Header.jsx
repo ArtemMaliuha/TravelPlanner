@@ -4,15 +4,20 @@ import { auth, googleProvider } from "../firebase.js"
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth"
 import { useStore } from "../store/store.jsx"
 import { useShallow } from "zustand/shallow"
-import { Link } from "react-router"
+import { Link, useLocation } from "react-router"
+import useInputChange from "../hooks/useInputChange.js"
 
 export default function Header() {
-    const {userPhoto, userName} = useStore(
+    const {userPhoto, userName, searchText, changeSearchText} = useStore(
         useShallow((state) => ({
             userPhoto: state.userPhoto,
-            userName: state.userName
+            userName: state.userName,
+            searchText: state.searchText,
+            changeSearchText: state.changeSearchText
         }))
     )
+
+    const location = useLocation()
 
     const [isOpen, setIsOpen] = useState(false)  
 
@@ -39,9 +44,9 @@ export default function Header() {
                 <p className="text-[20px] pt-[3px] ml-[24px] font-medium">Something else</p>
             </div>
             <div className="w-auto flex items-center mr-6">
-                <div className="relative flex items-center mr-3">
+                <div className={`relative flex items-center mr-3 ${location.pathname !== "/" ? "hidden" : ""}`}>
                     <button onClick={() => setIsOpen(isOpen => !isOpen)} className="absolute left-1"><VscSearch /></button>
-                    <input type="text" name="search" className={`h-7 text-[18px] border-gray-200 border-[2px] rounded-lg transition-all duration-500 ease-in-out ${isOpen ? "w-64 opacity-100 p-2 pl-6" : "w-0 opacity-0"}` }/>
+                    <input value={searchText} type="text" name="search" className={`h-7 text-[18px] border-gray-200 border-[2px] rounded-lg transition-all duration-500 ease-in-out ${isOpen ? "w-64 opacity-100 p-2 pl-6" : "w-0 opacity-0"}` } onInput={(e) => changeSearchText(e.target.value)}/>
                 </div>
                 <div className="ml-2 flex">
                     {
